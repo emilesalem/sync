@@ -19,7 +19,7 @@ s.Set(`key4`, `value4`)
 
 
 v := s.Get(`key4`)
-// v == `value5`
+// v == `value4`
 
 s.Delete(`key4`)
 
