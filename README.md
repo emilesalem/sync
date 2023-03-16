@@ -27,4 +27,21 @@ v = s.Get(`key4`)
 // v == ``
 ```
 
-keys type must be comparable, values can be of any type
+## Syncqueue
+
+a thread safe generic queue implemented with go routines
+
+### how to use
+
+```go
+import "github.com/emilesalem/sync/pkg/syncmap"
+
+s := syncqueue.NewSyncqueue[string](ctx, syncqueue.Options{Capacity: capacity})
+
+ok := syncQueue.Add(m)
+if !ok {
+    // queue capacity exceeded
+}
+
+msg := <-syncQueue.Read()
+```
