@@ -9,6 +9,7 @@ type Syncmap[K comparable, V any] struct {
 	wc     chan writeRequest[K, V]
 	dc     chan K
 	fc     chan chan map[K]V
+	sc     chan chan int
 }
 
 type readRequest[K comparable, V any] struct {
@@ -35,6 +36,7 @@ func NewSyncmap[K comparable, V any](ctx context.Context, m map[K]V) *Syncmap[K,
 		wc:     make(chan writeRequest[K, V]),
 		dc:     make(chan K),
 		fc:     make(chan chan map[K]V),
+		sc:     make(chan chan int),
 	}
 	go s.serveRequests(ctx)
 
@@ -58,6 +60,8 @@ func (s *Syncmap[K, V]) serveRequests(ctx context.Context) {
 				c[k] = v
 			}
 			f <- c
+		case req := <-s.sc:
+			req <- len(s.values)
 		}
 	}
 }
@@ -83,5 +87,12 @@ func (s *Syncmap[K, V]) Delete(k K) {
 func (s *Syncmap[K, V]) Flush() map[K]V {
 	v := make(chan map[K]V)
 	s.fc <- v
+	return <-v
+}
+
+// Size thread safely returns the size of the map
+func (s *Syncmap[K, V]) Size() int {
+	v := make(chan int)
+	s.sc <- v
 	return <-v
 }

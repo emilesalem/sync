@@ -183,3 +183,19 @@ func TestDeleteConcurrent(t *testing.T) {
 	}
 	w.Wait()
 }
+
+func TestSize(t *testing.T) {
+	ctx := context.Background()
+
+	s := syncmap.NewSyncmap(ctx, map[string]string{
+		`key1`: `value1`,
+		`key2`: `value2`,
+		`key3`: `value3`,
+		`key4`: `value4`,
+	})
+
+	v := s.Size()
+	if v != 4 {
+		t.Errorf("expected 4 got %d", v)
+	}
+}
