@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/emilesalem/sync/pkg/syncqueue"
+	"github.com/emilesalem/sync/v2/pkg/syncqueue"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

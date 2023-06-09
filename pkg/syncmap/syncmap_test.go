@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/emilesalem/sync/pkg/syncmap"
+	"github.com/emilesalem/sync/v2/pkg/syncmap"
 )
 
 func TestEmptyMap(t *testing.T) {
