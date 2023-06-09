@@ -12,9 +12,14 @@ type Syncmap[K comparable, V any] struct {
 	sc     chan chan int
 }
 
+type MapReadResult[V any] struct {
+	Value V
+	Ok    bool
+}
+
 type readRequest[K comparable, V any] struct {
 	Key          K
-	ResponseChan chan V
+	ResponseChan chan MapReadResult[V]
 }
 
 type writeRequest[K comparable, V any] struct {
@@ -49,7 +54,8 @@ func (s *Syncmap[K, V]) serveRequests(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case readRequest := <-s.rc:
-			readRequest.ResponseChan <- s.values[readRequest.Key]
+			v, ok := s.values[readRequest.Key]
+			readRequest.ResponseChan <- MapReadResult[V]{Value: v, Ok: ok}
 		case writeRequest := <-s.wc:
 			s.values[writeRequest.Key] = writeRequest.Value
 		case k := <-s.dc:
@@ -67,10 +73,11 @@ func (s *Syncmap[K, V]) serveRequests(ctx context.Context) {
 }
 
 // Get accepts a key and thread safely returns the associated value from the map
-func (s *Syncmap[K, V]) Get(k K) V {
-	v := make(chan V)
+func (s *Syncmap[K, V]) Get(k K) (V, bool) {
+	v := make(chan MapReadResult[V])
 	s.rc <- readRequest[K, V]{k, v}
-	return <-v
+	result := <-v
+	return result.Value, result.Ok
 }
 
 // Set accepts a key and value and thread safely assigns the value to the key in the map
