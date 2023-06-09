@@ -30,19 +30,28 @@ func TestGet(t *testing.T) {
 		`key4`: `value4`,
 	})
 
-	v := s.Get(`key1`)
+	v, ok := s.Get(`key1`)
+	if !ok {
+		t.Errorf("Expected ok to be true")
+	}
 
 	if v != `value1` {
 		t.Errorf("Get(key1) = %s; want `value1`", v)
 	}
 
-	v = s.Get(`key4`)
+	v, ok = s.Get(`key4`)
+	if !ok {
+		t.Errorf("Expected ok to be true")
+	}
 
 	if v != `value4` {
 		t.Errorf("Get(key1) = %s; want `value4`", v)
 	}
 
-	v = s.Get(`key5`)
+	v, ok = s.Get(`key5`)
+	if ok {
+		t.Errorf("Expected ok to be false")
+	}
 
 	if v != `` {
 		t.Errorf("Get(key1) = %s; want ``", v)
@@ -103,19 +112,19 @@ func TestGetConcurrent(t *testing.T) {
 	for i := 0; i < concurrency; i++ {
 		w.Add(1)
 		go func() {
-			v := s.Get(`key1`)
+			v, _ := s.Get(`key1`)
 
 			if v != `value1` {
 				t.Errorf("Get(key1) = %s; want `value1`", v)
 			}
 
-			v = s.Get(`key4`)
+			v, _ = s.Get(`key4`)
 
 			if v != `value4` {
 				t.Errorf("Get(key1) = %s; want `value4`", v)
 			}
 
-			v = s.Get(`key5`)
+			v, _ = s.Get(`key5`)
 
 			if v != `` {
 				t.Errorf("Get(key1) = %s; want ``", v)
