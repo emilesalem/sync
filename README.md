@@ -18,13 +18,15 @@ s := syncmap.NewSyncmap(ctx, map[string]string{
 s.Set(`key4`, `value4`)
 
 
-v := s.Get(`key4`)
+v, ok := s.Get(`key4`)
 // v == `value4`
+// ok == true
 
 s.Delete(`key4`)
 
-v = s.Get(`key4`)
+v, ok = s.Get(`key4`)
 // v == ``
+// ok == false
 ```
 
 ## Syncqueue
